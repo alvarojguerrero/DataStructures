@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 class Programa(ABC):
     @abstractmethod
     def ejecutar(self):
-        """Este método debe ser implementado por las subclases."""
         pass
 
 class Programa1(Programa):
@@ -31,7 +30,11 @@ class Programa1(Programa):
 
     def _promedio(self, numeros):
         suma = self._suma(numeros)
-        return suma / len(numeros) if len(numeros) > 0 else 0
+        if len(numeros) > 0:
+            promedio = suma / len(numeros)
+        else:
+            promedio = 0
+        return promedio
 
     def ejecutar(self):
         print("\nPrograma 1 - Variables, expresiones y estructuras de control")
@@ -60,10 +63,9 @@ class Programa2(Programa):
 
     def contar_palabra(self, texto, palabra):
         """Cuenta las apariciones exactas de una palabra en el texto."""
-        palabras = texto.lower().split()  # Divide el texto en palabras y pasa a minúsculas
+        palabras = texto.lower().split() 
         contador = 0
         for palabra_actual in palabras:
-            # Comparar palabra actual eliminando posibles signos de puntuación
             palabra_limpia = palabra_actual.strip(".,:;!?()[]{}\"'")
             if palabra_limpia == palabra:
                 contador += 1
@@ -139,7 +141,6 @@ class Menu:
                 print("Opción no válida. Por favor, seleccione una opción del 0 al 3.")
 
 
-# Iniciar el programa
 if __name__ == "__main__":
     menu = Menu()
     menu.mostrar_menu()

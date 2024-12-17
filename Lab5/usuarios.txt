@@ -1,0 +1,6 @@
+185,Pablo,2000-01-01,Medellin,23456,alice@gmail.com,123 Main
+200,Ximena,1990-02-02,Cali,898432,bob@gmail.com,456 Elm
+1,Lucia,1985-03-03,Pereira,98123,charlie@gmail.com,789 Oak
+4,Diana,1995-04-04,Pasto,12342,diana@gmail.com,101 Pine
+340,Carlos,1981-05-05,Bogota,5679,eve@gmail.com,202 Maple
+0,Maria,1988-05-12,Cartagena,101112,maria@gmail.com,202 Maple
