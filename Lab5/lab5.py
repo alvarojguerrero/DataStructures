@@ -450,9 +450,7 @@ class Ordenador:
     def ordenar_mergeSort(self):
 
         def merge(A, start, mid, end):
-            """
-            Combina dos subarreglos ordenados en un único arreglo ordenado.
-            """
+
             # Subarreglos temporales
             left = A[start:mid + 1]
             right = A[mid + 1:end + 1]
@@ -484,64 +482,14 @@ class Ordenador:
                 k += 1
 
         def merge_sort(A, start, end):
-            """
-            Ordena recursivamente la lista dividiéndola en mitades y combinándolas.
-            """
+
             if start < end:
-                # Calcular punto medio
                 mid = (start + end) // 2
 
-                # Ordenar ambas mitades
                 merge_sort(A, start, mid)
                 merge_sort(A, mid + 1, end)
 
-                # Combinar ambas mitades
                 merge(A, start, mid, end)
-
-        # Llamada inicial a merge_sort
-        merge_sort(self.A, 0, len(self.A) - 1)
-
-        def merge(A, p, q, r):
-            n1 = q - p + 1
-            n2 = r - q
-
-            L = [0] * n1
-            R = [0] * n2
-
-            for i in range(0, n1):
-                L[i] = A[p + i]
-
-            for j in range(0, n2):
-                R[j] = A[q + 1 + j]
-
-            i = 0
-            j = 0
-            k = p
-
-            while i < n1 and j < n2:
-                if L[i] <= R[j]:
-                    A[k] = L[i]
-                    i += 1
-                else:
-                    A[k] = R[j]
-                    j += 1
-                k += 1
-            while i < n1:
-                A[k] = L[i]
-                i += 1
-                k += 1
-
-            while j < n2:
-                A[k] = R[j]
-                j += 1
-                k += 1
-
-        def merge_sort(A, p, r):
-            if p < r:
-                q = (p + (r - p) // 2)
-                merge_sort(A, p, q)
-                merge_sort(A, q + 1, r)
-                merge(A, p, q, r)
 
         merge_sort(self.A, 0, len(self.A) - 1)
 
@@ -574,16 +522,23 @@ class OrdenadorLista:
         self.L.addLast(data)
 
     def ordenar(self):
-        if self.L.isEmpty():
-            return None
+        if self.L.isEmpty() or self.L.head.get_next() is None:
+            return
+
         current = self.L.head
         while current is not None:
-            next_node = current.get_next()
-            while next_node is not None:
-                if current.data > next_node.data:
-                    current.data, next_node.data = next_node.data, current.data
-                next_node = next_node.get_next()
-            current = current.get_next()
+            min_node = current
+            aux = current.get_next()
+            while aux is not None:
+                if aux.get_data() < min_node.get_data():
+                    min_node = aux
+                aux = aux.get_next()
+
+            # Intercambia los datos de los nodos
+            if min_node != current:
+                current.data, min_node.data = min_node.data, current.data
+
+            current = current.get_next()        
 
     def mostrar(self, end=""):
         aux = self.L.head
@@ -636,19 +591,19 @@ class OrdenadorAgenda():
         if self.L.size < 2: 
             return
 
-        for _ in range(self.L.size):  # Repite según el tamaño de la lista
+        for _ in range(self.L.size):  
             swapped = False
             aux = self.L.head
 
-            while aux and aux.get_next():  # Recorre la lista
-                # Compara por el campo `id` del objeto almacenado en el nodo
+            while aux and aux.get_next(): 
+                
                 if aux.data.getId() > aux.get_next().data.getId():
                     self.swap_node(aux, aux.get_next())
-                    swapped = True  # Marca que hubo intercambio
+                    swapped = True  
                 else:
                     aux = aux.get_next()
 
-            # Si no hubo intercambios, la lista ya está ordenada
+            
             if not swapped:
                 break        
 
