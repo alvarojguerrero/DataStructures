@@ -142,7 +142,7 @@ class Usuario:
 
 
 class Node:
-    def __init__ (self, data, next_node=None):
+    def __init__ (self, data=None, next_node=None):
         self.data = data
         self.next_node = next_node
 
@@ -159,11 +159,11 @@ class Node:
         self.next_node = next_node
 
 class SimpleList:
-    def __init__(self, data):
-        node = Node(data)
+    def __init__(self):
+        node = Node()
         self.head = node
         self.tail = node
-        self.size = 1
+        self.size = 0
 
     def size(self):
         return self.size
@@ -225,7 +225,7 @@ class SimpleList:
 
 
 class DoubleNode:
-    def __init__(self, data, next_node=None, prev_node=None):
+    def __init__(self, data=None, next_node=None, prev_node=None):
         self.data = data
         self.next_node = next_node
         self.prev_node = prev_node
@@ -250,11 +250,14 @@ class DoubleNode:
 
 class DoubleList:
     
-    def __init__(self, data):
-        node = DoubleNode(data)
-        self.head = node
-        self.tail = node
-        self.size = 1
+    def __init__(self):
+        self.head = DoubleNode()
+        self.tail = DoubleNode()
+        self.size = 0
+        #node = DoubleNode(data)
+        #self.head = node
+        #self.tail = node
+        #self.size = 1
         
     def size(self):
         return self.size
@@ -283,7 +286,7 @@ class DoubleList:
 
     def addFirst(self, data):
         node = DoubleNode(data)
-        if self.size == 0:
+        if self.isEmpty():
             self.head = node
             self.tail = node
         else:
@@ -294,44 +297,38 @@ class DoubleList:
         return True
 
     def removeFirst(self):
-        if self.size == 0:
+        if self.isEmpty():
             return None        
-        if self.size == 1:
-            self.head = None
-            self.tail = None
         else:
             aux = self.head
             self.head = self.head.get_next()
             self.head.set_prev(None)
             aux.set_next(None)
-        self.size -= 1        
-        return aux.get_data()
+            self.size -= 1        
+            return aux.get_data()
 
     def addLast(self, data):
         node = DoubleNode(data)
-        if self.size == 0:
+        if self.isEmpty():
             self.head = node
             self.tail = node
         else:
             self.tail.set_next(node)
-            node.set_prev(self.tail) 
+            node.set_prev(self.tail)
             self.tail = node
         self.size += 1
         return True
 
     def removeLast(self):
-        if self.size == 0:
-            return None        
-        if self.size == 1:
-            self.head = None
-            self.tail = None
+        if self.isEmpty():
+            return None      
         else:
             aux = self.tail
             self.tail = self.tail.get_prev()
             self.tail.set_next(None)
             aux.set_prev(None)
-        self.size -= 1        
-        return aux.get_data()
+            self.size -= 1        
+            return aux.get_data()
 
     def remove(self, data):
         aux = self.head
@@ -377,11 +374,52 @@ class DoubleList:
         node.set_prev(new_node)
         self.size += 1
 
+    def swap_node(self, aux1, aux2):
+        
+        if self.head == aux1:
+            self.head = aux2
+        elif self.head == aux2:
+            self.head = aux1
+        if self.tail == aux1:
+            self.tail = aux2
+        elif self.tail == aux2:
+            self.tail = aux1
+        
+        temp = aux1.get_next()
+        aux1.set_next(aux2.get_next())
+        aux2.set_next(temp)
+
+        if aux1.get_next() != None:
+            aux1.get_next().set_prev(aux1)
+        if aux2.get_next() != None:
+            aux2.get_next().set_prev(aux2) 
+     
+        temp = aux2.get_prev()
+        aux2.set_prev(aux1.get_prev())
+        aux1.set_prev(temp)
+
+        if aux1.get_prev() != None:
+            aux1.get_prev().set_next(aux1)
+        if aux2.get_prev() != None:
+            aux2.get_prev().set_next(aux2) 
+         
+        return True
+        
+    def bubbleSort(self):
+        for i in range(self.size):
+            aux = self.head
+            while aux != None:                
+                if aux.get_next():
+                    if aux.get_data > aux.get_next().get_data():
+                        self.swap_node(aux, aux.get_next())
+                        break                
+                aux = aux.get_next()
+        return True
 
 class Ordenador:
-    def __init__(self, capacity):
-        self.A = [random.randint(1, 100) for _ in range(capacity)]
-        self.limit = capacity
+    def __init__(self, limit):
+        self.limit = limit
+        self.A =  [random.randint(1, 100) for _ in range(self.limit)]
 
     def inicializar(self):
         self.A = [random.randint(1, 100) for _ in range(self.limit)]
@@ -410,6 +448,59 @@ class Ordenador:
             self.A[j] = temp
 
     def ordenar_mergeSort(self):
+
+        def merge(A, start, mid, end):
+            """
+            Combina dos subarreglos ordenados en un único arreglo ordenado.
+            """
+            # Subarreglos temporales
+            left = A[start:mid + 1]
+            right = A[mid + 1:end + 1]
+
+            # Índices para recorrer los subarreglos
+            i = j = 0
+            k = start
+
+            # Combinar elementos de left y right en A
+            while i < len(left) and j < len(right):
+                if left[i] <= right[j]:
+                    A[k] = left[i]
+                    i += 1
+                else:
+                    A[k] = right[j]
+                    j += 1
+                k += 1
+
+            # Copiar elementos restantes de left
+            while i < len(left):
+                A[k] = left[i]
+                i += 1
+                k += 1
+
+            # Copiar elementos restantes de right
+            while j < len(right):
+                A[k] = right[j]
+                j += 1
+                k += 1
+
+        def merge_sort(A, start, end):
+            """
+            Ordena recursivamente la lista dividiéndola en mitades y combinándolas.
+            """
+            if start < end:
+                # Calcular punto medio
+                mid = (start + end) // 2
+
+                # Ordenar ambas mitades
+                merge_sort(A, start, mid)
+                merge_sort(A, mid + 1, end)
+
+                # Combinar ambas mitades
+                merge(A, start, mid, end)
+
+        # Llamada inicial a merge_sort
+        merge_sort(self.A, 0, len(self.A) - 1)
+
         def merge(A, p, q, r):
             n1 = q - p + 1
             n2 = r - q
@@ -458,6 +549,8 @@ class Ordenador:
         print(self.A)
 
     def busqueda_binaria(self, valor):
+        self.ordenar_burbuja()
+        self.mostrar()  
         izquierda, derecha = 0, len(self.A) - 1
         while izquierda <= derecha:
             mid = (izquierda + derecha) // 2
@@ -482,22 +575,23 @@ class OrdenadorLista:
 
     def ordenar(self):
         if self.L.isEmpty():
-            return
+            return None
         current = self.L.head
         while current is not None:
-            next_node = current.next
+            next_node = current.get_next()
             while next_node is not None:
                 if current.data > next_node.data:
                     current.data, next_node.data = next_node.data, current.data
-                next_node = next_node.next
-            current = current.next
+                next_node = next_node.get_next()
+            current = current.get_next()
 
-    def mostrar(self):
-        current = self.L.head
-        while current is not None:
-            print(current.data, end=" -> ")
-            current = current.next
+    def mostrar(self, end=""):
+        aux = self.L.head
+        while aux:
+            print(aux.get_data(),end=end)
+            aux = aux.get_next()
         print("None")
+
 
 
 class OrdenadorAgenda():
@@ -507,44 +601,100 @@ class OrdenadorAgenda():
     def agregar_usuario(self, usuario):
         self.L.addLast(usuario)
 
-    def ordenar(self):
-        if self.L.isEmpty():
-            return
-        current = self.L.head
-        while current is not None:
-            next_node = current.next
-            while next_node is not None:
-                if current.data.getId() > next_node.data.getId():
-                    current.data, next_node.data = next_node.data, current.data
-                next_node = next_node.next
-            current = current.next
+    def swap_node(self, aux1, aux2):
+        if self.L.head == aux1:
+            self.L.head = aux2
+        elif self.L.head == aux2:
+            self.L.head = aux1
 
-    def mostrar(self):
-        current = self.L.head
-        while current is not None:
-            print(current.data)
-            current = current.next
+        if self.L.tail == aux1:
+            self.L.tail = aux2
+        elif self.L.tail == aux2:
+            self.L.tail = aux1
+
+        # Intercambio de referencias next
+        temp = aux1.get_next()
+        aux1.set_next(aux2.get_next())
+        aux2.set_next(temp)
+
+        if aux1.get_next() is not None:
+            aux1.get_next().set_prev(aux1)
+        if aux2.get_next() is not None:
+            aux2.get_next().set_prev(aux2)
+
+        # Intercambio de referencias prev
+        temp = aux2.get_prev()
+        aux2.set_prev(aux1.get_prev())
+        aux1.set_prev(temp)
+
+        if aux1.get_prev() is not None:
+            aux1.get_prev().set_next(aux1)
+        if aux2.get_prev() is not None:
+            aux2.get_prev().set_next(aux2)
+
+    def ordenar(self):
+        if self.L.size < 2: 
+            return
+
+        for _ in range(self.L.size):  # Repite según el tamaño de la lista
+            swapped = False
+            aux = self.L.head
+
+            while aux and aux.get_next():  # Recorre la lista
+                # Compara por el campo `id` del objeto almacenado en el nodo
+                if aux.data.getId() > aux.get_next().data.getId():
+                    self.swap_node(aux, aux.get_next())
+                    swapped = True  # Marca que hubo intercambio
+                else:
+                    aux = aux.get_next()
+
+            # Si no hubo intercambios, la lista ya está ordenada
+            if not swapped:
+                break        
+
+    def mostrar(self, end=""):
+        aux = self.L.head
+        while aux:
+            print(aux.get_data(),end=end)
+            aux = aux.get_next()
+        print("None")
 
 class Programa1(Programa):
     def ejecutar(self):
+        print("\nArreglo Inicial Aleatorios:")
         ordenador = Ordenador(10)
-        ordenador.inicializar()
-        print("Arreglo inicial:")
         ordenador.mostrar()
         print("\nOrdenando con burbuja:")
         ordenador.ordenar_burbuja()
         ordenador.mostrar()
+        print("-"*40)
+        print("\nArreglo Valores Aleatorios:")
+        ordenador.inicializar()
+        ordenador.mostrar()
         print("\nOrdenando con selección:")
         ordenador.ordenar_seleccion()
+        ordenador.mostrar()
+        print("-"*40)
+        print("\nArreglo Valores Aleatorios:")
+        ordenador.inicializar()
         ordenador.mostrar()
         print("\nOrdenando con inserción:")
         ordenador.ordenar_insercion()
         ordenador.mostrar()
+        print("-"*40)
+        print("\nArreglo Valores Aleatorios:")
+        ordenador.inicializar()
+        ordenador.mostrar()
         print("\nOrdenando con merge sort:")
         ordenador.ordenar_mergeSort()
         ordenador.mostrar()
+        print("-"*40)
         print("\nBusqueda Binaria:")
-        print(ordenador.busqueda_binaria(50))
+        ordenador.inicializar()
+        ordenador.mostrar()
+        num = int(input("Ingrese el valor que desea buscar: "))
+        print(f"El valor esta en el indice: {ordenador.busqueda_binaria(num)}")
+        print("-"*40)
 
 
 
@@ -553,15 +703,17 @@ class Programa2(Programa):
         ordenador_lista = OrdenadorLista()
         ordenador_lista.inicializar(12)
         print("Lista inicial:")
-        ordenador_lista.mostrar()
+        ordenador_lista.mostrar(end=" -> ")
         print("\nOrdenando la lista:")
         ordenador_lista.ordenar()
         print("Lista después de ordenar:")
-        ordenador_lista.mostrar()
+        ordenador_lista.mostrar(end=" -> ")
 
 class Programa3(Programa):
     def ejecutar(self):
         ordenador_agenda = OrdenadorAgenda()
+        #ordenador_agenda.mostrar()
+        #print("_____________")
         print("\nAgregando usuarios:")
         with open("usuarios.txt", "r") as file:
             for line in file:
@@ -575,9 +727,12 @@ class Programa3(Programa):
                 direccion = Direccion(datos[6], ciudad_nacimiento)
                 usuario = Usuario(nombre, cedula, fecha_nacimiento, ciudad_nacimiento, tel, email, direccion)
                 ordenador_agenda.agregar_usuario(usuario)
-        print("\nOrdenando la agenda por cédula:")
+        print("\nUsuario de la agenda en la lista doble:")
+        ordenador_agenda.mostrar(end="\n <-> \n")
+        print("-"*40)
+        print("\nOrdenando la agenda por cedula:")
         ordenador_agenda.ordenar()
-        ordenador_agenda.mostrar()
+        ordenador_agenda.mostrar(end="\n <-> \n")
 
 
 class Menu:
