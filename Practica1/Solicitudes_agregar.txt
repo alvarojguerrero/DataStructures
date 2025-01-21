@@ -1,0 +1,4 @@
+Juan-Perez 24567898 Macbook 5 11 11 2011 4000000 Pendiente
+Juan-Perez 24567898 Pantall 1 11 11 2011 5000000 Pendiente
+Juan-Perez 24567898 Pantall 2 11 11 2011 5000000 Pendiente
+Juan-Perez 24567898 Pantal 1 11 11 2011 5000000 Pendiente
