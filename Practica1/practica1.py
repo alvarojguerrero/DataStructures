@@ -526,7 +526,7 @@ class Administrador:
 
 
     def eliminar_usuario(self, empleados, passwords, _id):
-        
+        temp_contra = {}
         self.empleados.remove(_id)
 
         with open("Empleados.txt", "w") as f:
@@ -535,14 +535,21 @@ class Administrador:
                 usuario = aux.get_data()
                 f.write(f"{usuario.nombre} {usuario.id} {usuario.fecha_nacimiento.getDia()} {usuario.fecha_nacimiento.getMes()} {usuario.fecha_nacimiento.getA()} {usuario.ciudad_nacimiento} {usuario.tel} {usuario.email} {usuario.dir.getCalle()} {usuario.dir.getNomenclatura()} {usuario.dir.getBarrio()} {usuario.dir.getCiudad()} {usuario.dir.getEdificio()} {usuario.dir.getApto()}\n")
                 aux = aux.get_next()
-        
-        self.contrasenas.pop(str(_id))
+        print(f"self.contrasenas: {self.contrasenas}\n")
+        print(f"passwords: {passwords}\n")
+        try:
+            passwords.pop(str(_id))
+        except KeyError:
+            messagebox.showerror("Error", "El usuario no existe.")
+        print(f"passwords despues del pop: {passwords}\n")
         with open("Password.txt", "w") as f:
-            for key, value in self.contrasenas.items():
+            for key, value in passwords.items():
                 f.write(f"{key} {value['password']} {value['rol']}\n")
                 #id_usuario, password, rol = linea.strip().split(" ")
-                self.contrasenas[key] = {"password": value['password'], "rol": value['rol']}
-        return self.contrasenas
+                temp_contra[key] = {"password": value['password'], "rol": value['rol']}
+        print(f"temp_contra: {temp_contra}\n")
+        self.contrasenas = temp_contra
+        #return self.contrasenas
     
     def cambiar_password(self, passwords, _id, password):
         passwords[str(_id)]["password"] = password
@@ -964,16 +971,16 @@ class Menu:
         #self.inventario = self.cargar_inventario()
 
         # Inicializamos los programas
-        self.programas = {
-            "1": Programa1(),
-            "2": Programa2(),
-            "3": Programa3(),
-            "4": Programa4(),
-            "5": Programa5(),
-            "6": Programa6(),
-            "7": Programa7(),
-            "8": Programa8()
-        }
+        # self.programas = {
+        #     "1": Programa1(),
+        #     "2": Programa2(),
+        #     "3": Programa3(),
+        #     "4": Programa4(),
+        #     "5": Programa5(),
+        #     "6": Programa6(),
+        #     "7": Programa7(),
+        #     "8": Programa8()
+        # }
 
         # Crear pantalla de login
         self.pantalla_login()
@@ -1006,7 +1013,7 @@ class Menu:
                 for linea in archivo:
                     id_usuario, password, rol = linea.strip().split(" ")
                     passwords[id_usuario] = {"password": password, "rol": rol}
-            print(passwords)
+            print(f"Passwords de la def cargar_passwords: {passwords}\n")
         except FileNotFoundError:
             messagebox.showerror("Error", "El archivo 'Password.txt' no se encontró.")
         return passwords
@@ -1067,7 +1074,9 @@ class Menu:
 
         if rol == "administrador":
             nombre = self.usuarios.search_by_id(int(id_usuario)).getNombre()
-            print(nombre)
+            print("Nombre Administrador", nombre)
+            print("En el menu rolAdmin self.usuarios", self.usuarios)
+            print("En el menu rolAdmin self.password  :", self.passwords)
             self.usuario = Administrador(id_usuario, nombre, self.usuarios, self.passwords)
             self.mostrar_menu_admin()
         elif rol == "investigador":
@@ -1112,7 +1121,7 @@ class Menu:
 
         self.mostrar_menu_admin()
 
- 
+    #Registrar usuario
     def ejecutar_programa_1(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -1254,15 +1263,23 @@ class Menu:
         
         def eliminar():
             user_id = entry_id_eliminar.get()
+            print(f"Eliminando usuario con ID {str(user_id)}...\n")
+            self.passwords = self.cargar_passwords()
             if user_id.isdigit():
-                usuario_eliminado = self.usuario.eliminar_usuario(self.usuarios, self.passwords, int(user_id))
-                print("usario elimina",usuario_eliminado)
-                if str(user_id) not in usuario_eliminado.keys():
-                    self.usuario.contrasenas = usuario_eliminado
-                    print("self.passwords",self.passwords)
-                    label_status.config(text="Usuario eliminado con éxito", fg="green")
-                else:
-                    label_status.config(text="Usuario no encontrado", fg="red")
+                try:
+                    self.usuario.eliminar_usuario(self.usuarios, self.passwords, int(user_id))
+                    if str(user_id) not in self.usuario.contrasenas.keys():
+                        label_status.config(text="Usuario eliminado con éxito", fg="green")
+                except Exception as e:
+                    label_status.config(text="Usuario no encontrado", fg="red")#self.usuario.eliminar_usuario(self.usuarios, self.passwords, int(user_id))
+                #print(f"Contrasenas admind despues de eliminar: {self.usuario.contrasenas}\n")
+                #print("usario elimina",usuario_eliminado)
+                #if str(user_id) not in self.usuario.contrasenas.keys():
+                    #self.usuario.contrasenas = usuario_eliminado
+                    #print("self.passwords",self.passwords)
+                #    label_status.config(text="Usuario eliminado con éxito", fg="green")
+                #else:
+                #    label_status.config(text="Usuario no encontrado", fg="red")
             else:
                 label_status.config(text="Por favor, ingrese un ID válido", fg="red")
         
@@ -1276,6 +1293,7 @@ class Menu:
         
         tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin).pack(pady=5)
 
+    #Cambiar Contraseña
     def ejecutar_programa_3(self):
         self.root.title("Cambiar Contraseña")
         for widget in self.root.winfo_children():
@@ -1317,6 +1335,7 @@ class Menu:
         
         tk.Button(self.root, text="Regresar", command=self.regresar_menu_admin).pack(pady=5)
     
+    #Responder Solicitudes de Agregar Equipos
     def ejecutar_programa_4(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -1350,8 +1369,7 @@ class Menu:
         tk.Button(self.root, text="Rechazar", command=rechazar_solicitud, bg="red").pack(side=tk.LEFT, padx=10)
 
 
-
-
+    #Listar Equipos
     def ejecutar_programa_5(self):
         # Limpiar la ventana actual (el menú)
         for widget in self.root.winfo_children():
@@ -1376,6 +1394,7 @@ class Menu:
         btn_regresar = tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_investigador)
         btn_regresar.pack(pady=10)
 
+#
     def generar_archivo(self):
         archivo_generado = self.usuario.generar_archivo() 
         if archivo_generado.endswith(".txt"):
@@ -1390,7 +1409,7 @@ class Menu:
         else:
             messagebox.showerror("Error", f"No se pudo generar el archivo: {archivo_generado}")
 
-
+    #
     def ejecutar_programa_6(self):
         for widget in self.root.winfo_children():
             widget.destroy()
