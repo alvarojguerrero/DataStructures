@@ -537,10 +537,11 @@ class Administrador:
                 aux = aux.get_next()
         print(f"self.contrasenas: {self.contrasenas}\n")
         print(f"passwords: {passwords}\n")
-        try:
-            passwords.pop(str(_id))
-        except KeyError:
-            messagebox.showerror("Error", "El usuario no existe.")
+        #try:
+        passwords.pop(str(_id))
+        #except KeyError:
+            
+        #    messagebox.showerror("Error", "El usuario no existe.")
         print(f"passwords despues del pop: {passwords}\n")
         with open("Password.txt", "w") as f:
             for key, value in passwords.items():
@@ -1271,15 +1272,8 @@ class Menu:
                     if str(user_id) not in self.usuario.contrasenas.keys():
                         label_status.config(text="Usuario eliminado con éxito", fg="green")
                 except Exception as e:
-                    label_status.config(text="Usuario no encontrado", fg="red")#self.usuario.eliminar_usuario(self.usuarios, self.passwords, int(user_id))
-                #print(f"Contrasenas admind despues de eliminar: {self.usuario.contrasenas}\n")
-                #print("usario elimina",usuario_eliminado)
-                #if str(user_id) not in self.usuario.contrasenas.keys():
-                    #self.usuario.contrasenas = usuario_eliminado
-                    #print("self.passwords",self.passwords)
-                #    label_status.config(text="Usuario eliminado con éxito", fg="green")
-                #else:
-                #    label_status.config(text="Usuario no encontrado", fg="red")
+                    label_status.config(text="Usuario no encontrado", fg="red")
+                    messagebox.showerror("Error", "El usuario no existe.")
             else:
                 label_status.config(text="Por favor, ingrese un ID válido", fg="red")
         
