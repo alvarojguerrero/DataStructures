@@ -1448,7 +1448,7 @@ class Menu:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        label_equipos = tk.Label(self.root, text="Consultar Control de Cambios:", font=("Arial", 14))
+        label_equipos = tk.Label(self.root, text="Listar Equipos:", font=("Arial", 14))
         label_equipos.pack(pady=10)
         
         # Obtener la lista de equipos del investigador
@@ -1580,7 +1580,7 @@ class Menu:
 
         tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_investigador).pack(pady=10)
         
-        btn_generar_archivo = tk.Button(self.root, text="Generar archivo de solicitudes", command=self.generar_archivo_solicitudes)
+        btn_generar_archivo = tk.Button(self.root, text="Generar archivo de solicitudes", command=self.usuario.generar_archivo_solicitudes)
         btn_generar_archivo.pack(pady=10)
 
     def ejecutar_programa_9(self):
