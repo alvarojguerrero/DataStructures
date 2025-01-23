@@ -4,35 +4,35 @@ from tkinter import messagebox
 import os
 import datetime
 
-class Programa1:
-    def ejecutar(self):
-        print("Ejecutando Programa 1")
-class Programa2:
-    def ejecutar(self):
-        print("Ejecutando Programa 2")
-class Programa3:
-    def ejecutar(self):
-        print("Ejecutando Programa 3")
+# class Programa1:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 1")
+# class Programa2:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 2")
+# class Programa3:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 3")
 
-class Programa4:
-    def ejecutar(self):
-        print("Ejecutando Programa 4")
+# class Programa4:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 4")
 
-class Programa5:
-    def ejecutar(self):
-        print("Ejecutando Programa 5")
+# class Programa5:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 5")
 
-class Programa6:
-    def ejecutar(self):
-        print("Ejecutando Programa 6")  
+# class Programa6:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 6")  
 
-class Programa7:
-    def ejecutar(self):
-        print("Ejecutando Programa 7")
+# class Programa7:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 7")
 
-class Programa8:
-    def ejecutar(self):
-        print("Ejecutando Programa 8")
+# class Programa8:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 8")
 
 
 class Fecha:
@@ -535,7 +535,33 @@ class Administrador:
         self.contrasenas = contrasenas
         self.inventario = DoubleList()
 
-
+    def generar_archivo_solicitudes_pendientes(self):
+            #archivo, _, = self.usuario.generar_archivo_solicitudes_pendientes()
+            #if archivo:
+        try:
+            with open("Solicitudes_pendientes_agregar.txt", "w") as archivo_pendientes:
+                with open("Solicitudes_agregar.txt", "r") as archivo:
+                    for line in archivo:
+                        datos = line.strip().split(" ")
+                        if datos[8] == "Pendiente":
+                            archivo_pendientes.write(f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} {datos[4]} {datos[5]} {datos[6]} {datos[7]} {datos[8]}\n")
+            messagebox.showinfo("Éxito", f"El archivo Solicitudes_pendientes_agregar.txt ha sido generado con éxito")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo generar el archivo: Solicitudes_pendientes_agregar.txt")
+    
+    def generar_archivo_solicitudes_pendientes_eliminar(self):
+            #archivo, _, = self.usuario.generar_archivo_solicitudes_pendientes()
+            #if archivo:
+        try:
+            with open("Solicitudes_pendientes_eliminar.txt", "w") as archivo_pendientes:
+                with open("Solicitudes_eliminar.txt", "r") as archivo:
+                    for line in archivo:
+                        datos = line.strip().split(" ")
+                        if datos[4] == "Pendiente":
+                            archivo_pendientes.write(f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} {datos[4]}\n")
+            messagebox.showinfo("Éxito", f"El archivo Solicitudes_pendientes_eliminar.txt ha sido generado con éxito")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo generar el archivo: Solicitudes_pendientes_eliminar.txt")
     def registrar_usuario(self, usuario, passwords, rol):
         with open("Empleados.txt", "a") as f:
             f.write(f"{usuario.nombre} {usuario.id} {usuario.fecha_nacimiento.getDia()} {usuario.fecha_nacimiento.getMes()} {usuario.fecha_nacimiento.getA()} {usuario.ciudad_nacimiento} {usuario.tel} {usuario.email} {usuario.dir.getCalle()} {usuario.dir.getNomenclatura()} {usuario.dir.getBarrio()} {usuario.dir.getCiudad()} {usuario.dir.getEdificio()} {usuario.dir.getApto()}\n")
@@ -571,17 +597,22 @@ class Administrador:
         return True
 
     def responder_solicitudes_agregar(self):
-            
-        solicitud = ""
-        with open("Solicitudes_agregar.txt", "r") as f:
-            for line in f:
-                datos = line.strip().split(" ")
-                print("datos", datos)
-                if datos[8] == "Pendiente":
-                    solicitud += f"¿Desea agregar el equipo {datos[2]} con placa {datos[3]} al inventario de {datos[0]}?\n"
-                    break
-        print("solicitud", solicitud)
-        return solicitud,datos,line
+        try:    
+            solicitud = ""
+            with open("Solicitudes_agregar.txt", "r") as f:
+                for line in f:
+                    datos = line.strip().split(" ")
+                    print("datos", datos)
+                    if datos[8] == "Pendiente":
+                        solicitud += f"¿Desea agregar el equipo {datos[2]} con placa {datos[3]} al inventario de {datos[0]}?\n"
+                        break
+            return solicitud,datos,line
+            print("solicitud", solicitud)
+        except FileNotFoundError:
+            print("El archivo 'Solicitudes_agregar.txt' no se encontró.")
+            return None
+
+        #return solicitud,datos,line
  
 
     def responder_solicitudes_eliminar(self):
@@ -785,9 +816,6 @@ class Administrador:
 
         return equipos_inve
  
-
-    
-
     def cargar_inventario(self):
         inventario = DoubleList()
         try:
@@ -1035,21 +1063,6 @@ class Menu:
         # Cargar datos de empleados y contraseñas
         self.usuarios = self.cargar_usuarios()
         self.passwords = self.cargar_passwords()
-        #self.inventario = self.cargar_inventario()
-
-        # Inicializamos los programas
-        # self.programas = {
-        #     "1": Programa1(),
-        #     "2": Programa2(),
-        #     "3": Programa3(),
-        #     "4": Programa4(),
-        #     "5": Programa5(),
-        #     "6": Programa6(),
-        #     "7": Programa7(),
-        #     "8": Programa8()
-        # }
-
-        # Crear pantalla de login
         self.pantalla_login()
 
     def cargar_usuarios(self):
@@ -1408,6 +1421,7 @@ class Menu:
         tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin).pack(pady=10)
         tk.Button(self.root, text="Aceptar", command=aceptar_solicitud, bg="green").pack(side=tk.LEFT, padx=10)
         tk.Button(self.root, text="Rechazar", command=rechazar_solicitud, bg="red").pack(side=tk.LEFT, padx=10)
+        tk.Button(self.root, text="Generar archivo", command=self.usuario.generar_archivo_solicitudes_pendientes, bg="green").pack(side=tk.LEFT, padx=10)
 
     def ejecutar_programa_12(self):
         for widget in self.root.winfo_children():
@@ -1440,6 +1454,7 @@ class Menu:
         tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin).pack(pady=10)
         tk.Button(self.root, text="Aceptar", command=aceptar_solicitud, bg="green").pack(side=tk.LEFT, padx=10)
         tk.Button(self.root, text="Rechazar", command=rechazar_solicitud, bg="red").pack(side=tk.LEFT, padx=10)
+        tk.Button(self.root, text="Generar archivo", command=self.usuario.generar_archivo_solicitudes_pendientes_eliminar, bg="green").pack(side=tk.LEFT, padx=10)
 
 
     #Listar Equipos
