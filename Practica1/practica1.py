@@ -4,35 +4,35 @@ from tkinter import messagebox
 import os
 import datetime
 
-class Programa1:
-    def ejecutar(self):
-        print("Ejecutando Programa 1")
-class Programa2:
-    def ejecutar(self):
-        print("Ejecutando Programa 2")
-class Programa3:
-    def ejecutar(self):
-        print("Ejecutando Programa 3")
+# class Programa1:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 1")
+# class Programa2:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 2")
+# class Programa3:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 3")
 
-class Programa4:
-    def ejecutar(self):
-        print("Ejecutando Programa 4")
+# class Programa4:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 4")
 
-class Programa5:
-    def ejecutar(self):
-        print("Ejecutando Programa 5")
+# class Programa5:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 5")
 
-class Programa6:
-    def ejecutar(self):
-        print("Ejecutando Programa 6")  
+# class Programa6:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 6")  
 
-class Programa7:
-    def ejecutar(self):
-        print("Ejecutando Programa 7")
+# class Programa7:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 7")
 
-class Programa8:
-    def ejecutar(self):
-        print("Ejecutando Programa 8")
+# class Programa8:
+#     def ejecutar(self):
+#         print("Ejecutando Programa 8")
 
 
 class Fecha:
@@ -296,6 +296,24 @@ class DoubleList:
                     aux = aux.get_next()
             return None
 
+    def _remove(self, data):
+        aux = self.head
+        if aux.data.getPlaca() == data:
+           return self.removeFirst()
+        if self.tail.data.getPlaca() == data:
+            return self.removeLast()
+        else:            
+            while aux:                
+                if aux.data.getPlaca() == data:
+                    aux.get_next().set_prev(aux.get_prev())
+                    aux.get_prev().set_next(aux.get_next())
+                    aux.set_next(None)
+                    aux.set_prev(None)
+                    return aux
+                else:
+                    aux = aux.get_next()
+            return None
+
     def addAfter(self, node, data):
         if node is None:
             raise ValueError("Nodo invalido")
@@ -517,7 +535,33 @@ class Administrador:
         self.contrasenas = contrasenas
         self.inventario = DoubleList()
 
-
+    def generar_archivo_solicitudes_pendientes(self):
+            #archivo, _, = self.usuario.generar_archivo_solicitudes_pendientes()
+            #if archivo:
+        try:
+            with open("Solicitudes_pendientes_agregar.txt", "w") as archivo_pendientes:
+                with open("Solicitudes_agregar.txt", "r") as archivo:
+                    for line in archivo:
+                        datos = line.strip().split(" ")
+                        if datos[8] == "Pendiente":
+                            archivo_pendientes.write(f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} {datos[4]} {datos[5]} {datos[6]} {datos[7]} {datos[8]}\n")
+            messagebox.showinfo("Éxito", f"El archivo Solicitudes_pendientes_agregar.txt ha sido generado con éxito")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo generar el archivo: Solicitudes_pendientes_agregar.txt")
+    
+    def generar_archivo_solicitudes_pendientes_eliminar(self):
+            #archivo, _, = self.usuario.generar_archivo_solicitudes_pendientes()
+            #if archivo:
+        try:
+            with open("Solicitudes_pendientes_eliminar.txt", "w") as archivo_pendientes:
+                with open("Solicitudes_eliminar.txt", "r") as archivo:
+                    for line in archivo:
+                        datos = line.strip().split(" ")
+                        if datos[4] == "Pendiente":
+                            archivo_pendientes.write(f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} {datos[4]}\n")
+            messagebox.showinfo("Éxito", f"El archivo Solicitudes_pendientes_eliminar.txt ha sido generado con éxito")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo generar el archivo: Solicitudes_pendientes_eliminar.txt")
     def registrar_usuario(self, usuario, passwords, rol):
         with open("Empleados.txt", "a") as f:
             f.write(f"{usuario.nombre} {usuario.id} {usuario.fecha_nacimiento.getDia()} {usuario.fecha_nacimiento.getMes()} {usuario.fecha_nacimiento.getA()} {usuario.ciudad_nacimiento} {usuario.tel} {usuario.email} {usuario.dir.getCalle()} {usuario.dir.getNomenclatura()} {usuario.dir.getBarrio()} {usuario.dir.getCiudad()} {usuario.dir.getEdificio()} {usuario.dir.getApto()}\n")
@@ -537,19 +581,13 @@ class Administrador:
                 aux = aux.get_next()
         print(f"self.contrasenas: {self.contrasenas}\n")
         print(f"passwords: {passwords}\n")
-        try:
-            passwords.pop(str(_id))
-        except KeyError:
-            messagebox.showerror("Error", "El usuario no existe.")
-        print(f"passwords despues del pop: {passwords}\n")
+        passwords.pop(str(_id))
         with open("Password.txt", "w") as f:
             for key, value in passwords.items():
                 f.write(f"{key} {value['password']} {value['rol']}\n")
-                #id_usuario, password, rol = linea.strip().split(" ")
                 temp_contra[key] = {"password": value['password'], "rol": value['rol']}
         print(f"temp_contra: {temp_contra}\n")
         self.contrasenas = temp_contra
-        #return self.contrasenas
     
     def cambiar_password(self, passwords, _id, password):
         passwords[str(_id)]["password"] = password
@@ -559,33 +597,48 @@ class Administrador:
         return True
 
     def responder_solicitudes_agregar(self):
-            
-        solicitud = ""
-        with open("Solicitudes_agregar.txt", "r") as f:
-            for line in f:
-                datos = line.strip().split(" ")
-                print("datos", datos)
-                if datos[8] == "Pendiente":
-                    solicitud += f"¿Desea agregar el equipo {datos[2]} con placa {datos[3]} al inventario de {datos[0]}?\n"
-                    break
-        print("solicitud", solicitud)
-        return solicitud,datos,line
+        try:    
+            solicitud = ""
+            with open("Solicitudes_agregar.txt", "r") as f:
+                for line in f:
+                    datos = line.strip().split(" ")
+                    print("datos", datos)
+                    if datos[8] == "Pendiente":
+                        solicitud += f"¿Desea agregar el equipo {datos[2]} con placa {datos[3]} al inventario de {datos[0]}?\n"
+                        break
+            return solicitud,datos,line
+            print("solicitud", solicitud)
+        except FileNotFoundError:
+            print("El archivo 'Solicitudes_agregar.txt' no se encontró.")
+            return None
+
+        #return solicitud,datos,line
  
 
     def responder_solicitudes_eliminar(self):
+        solicitud = ""
         with open("Solicitudes_eliminar.txt", "r") as f:
             for line in f:
                 datos = line.strip().split(" ")
+                print("datos", datos)
                 if datos[4] == "Pendiente":
-                    print(f"¿Desea eliminar el equipo {datos[2]} del inventario de {datos[0]} \n Justificacion: {datos[3]} ?")
-                    respuesta = input("Respuesta (s/n): ")
-                    if respuesta == "s":
-                        self.solicitudes_eliminar.addLast({datos[1], datos[2], datos[3]})
-                        self.registrar_control_de_cambio(datos[0], datos[3], "Eliminar")
-                        self.actualizar_estado_solicitud_eliminar("Solicitudes_eliminar.txt", line, "Aceptada")
-                    else:
-                        print("Solicitud rechazada")
-                        self.actualizar_estado_solicitud("Solicitudes_eliminar.txt", line, "Rechazada")
+                    solicitud += f"¿Desea eliminar el equipo con placa {datos[2]}\nJufstificacion: {datos[3]}?\n"
+                    break
+        print("solicitud", solicitud)
+        return solicitud,datos,line
+        #with open("Solicitudes_eliminar.txt", "r") as f:
+            # for line in f:
+            #     datos = line.strip().split(" ")
+            #     if datos[4] == "Pendiente":
+            #         print(f"¿Desea eliminar el equipo {datos[2]} del inventario de {datos[0]} \n Justificacion: {datos[3]} ?")
+            #         respuesta = input("Respuesta (s/n): ")
+            #         if respuesta == "s":
+            #             self.solicitudes_eliminar.addLast({datos[1], datos[2], datos[3]})
+            #             self.registrar_control_de_cambio(datos[0], datos[3], "Eliminar")
+            #             self.actualizar_estado_solicitud_eliminar("Solicitudes_eliminar.txt", line, "Aceptada")
+            #         else:
+            #             print("Solicitud rechazada")
+            #             self.actualizar_estado_solicitud("Solicitudes_eliminar.txt", line, "Rechazada")
 
 
     def registrar_control_de_cambio(self, investigador_id, placa, tipo_cambio):
@@ -615,6 +668,34 @@ class Administrador:
                 registro = aux.get_data()
                 archivo.write(f"{registro.getNombre()} {registro.getId()} {registro.getEquipo()} {registro.getPlaca()} {registro.getFecha().getDia()} {registro.getFecha().getMes()} {registro.getFecha().getA()} {registro.getValor()}\n")
                 aux = aux.get_next()    
+    
+    def actualizar_inventario_eliminar(self, placa):
+        update_inventario = DoubleList()
+        try:
+            with open("InventarioGeneral.txt", "r") as archivo:
+                for linea in archivo:
+                    datos = linea.strip().split(" ")
+                    nombre = datos[0]
+                    id_investigador = int(datos[1])
+                    fecha_compra = Fecha(int(datos[4]), int(datos[5]), int(datos[6]))
+                    equipo = Equipo(datos[2], int(datos[3]), fecha_compra, int(datos[7]))
+                    registros = Inventario(nombre, id_investigador, equipo.getNombre(), equipo.getPlaca(), equipo.getFechaCompra(), equipo.getValor())
+                    update_inventario.addLast(registros)
+        except FileNotFoundError:
+            print("El archivo 'InventarioGeneral.txt' no se encontró.")
+        print(f"Lista actualizar_inventario_eliminar")
+        print(type(placa))
+        update_inventario.print_list("\n")
+        update_inventario._remove(int(placa))
+        update_inventario.bubbleSort()
+        print(f"despues del remove {placa}")
+        update_inventario.print_list("\n")
+        with open("InventarioGeneral.txt", "w") as archivo:
+            aux = update_inventario.head
+            while aux:
+                registro = aux.get_data()
+                archivo.write(f"{registro.getNombre()} {registro.getId()} {registro.getEquipo()} {registro.getPlaca()} {registro.getFecha().getDia()} {registro.getFecha().getMes()} {registro.getFecha().getA()} {registro.getValor()}\n")
+                aux = aux.get_next()
 
     def actualizar_estado_solicitud(self, archivo, linea, estado):
         if estado == "Aceptada":
@@ -640,6 +721,7 @@ class Administrador:
                     f.write(l)
     
     def actualizar_estado_solicitud_eliminar(self, archivo, linea, estado):
+        self.actualizar_inventario_eliminar(linea.strip().split(" ")[2])
         with open(archivo, "r") as f:
             lineas = f.readlines()
         with open(archivo, "w") as f:
@@ -661,7 +743,7 @@ class Administrador:
                     if datos[1] == str(_id):
                         fecha_compra = Fecha(datos[4], datos[5], datos[6])
                         equipo = Equipo(datos[2], datos[3], fecha_compra, datos[7])
-                        self.equipos.addLast(equipo)
+                        #self.equipos.addLast(equipo)
                         
                         equipos_widget += f"Equipo: {equipo.nombre} | Placa: {equipo.placa} | Fecha Compra: {equipo.fecha_compra} | Valor: {equipo.valor} \n"
                         equipos_txt += f"{equipo.nombre} {equipo.placa} {equipo.fecha_compra} {equipo.valor} \n"
@@ -670,6 +752,32 @@ class Administrador:
             print("Error", "El archivo 'InventarioGeneral.txt' no se encontró.")
         
         return equipos_widget, equipos_txt 
+    
+    def consultar_control_de_cambio(self):
+        control_de_cambio = ""
+        try:
+            with open("Control_de_cambios.txt", "r") as archivo:
+                for linea in archivo:
+                    datos = linea.strip().split(" ")
+                    #print("datos", datos)
+                    control_de_cambio += f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} \n"
+        except FileNotFoundError:
+            print("El archivo 'Control_de_cambio.txt' no se encontró.")
+        return control_de_cambio
+    
+    def generar_archivo_control_de_cambio(self):
+        contol_cambios = self.consultar_control_de_cambio()
+        
+        nombre_archivo = f"Control_de_cambios.txt"
+        
+        try:
+            with open(nombre_archivo, "w") as archivo:
+                archivo.write(contol_cambios)
+                messagebox.showinfo("Éxito", f"El archivo '{nombre_archivo}' ha sido generado con éxito.")
+            return nombre_archivo  
+        except Exception as e:
+            messagebox.showinfo("Fallo", f"El archivo '{nombre_archivo}' no se ha generado con éxito.")
+            return str(e)  
 
     def registrar_control_de_cambio(self, cedula, placa, tipo):
         with open("Control_de_cambios.txt", "a") as f:
@@ -708,9 +816,6 @@ class Administrador:
 
         return equipos_inve
  
-
-    
-
     def cargar_inventario(self):
         inventario = DoubleList()
         try:
@@ -723,6 +828,7 @@ class Administrador:
                     equipo = Equipo(datos[2], int(datos[3]), fecha_compra, int(datos[7]))
                     registro = Inventario(nombre, id_investigador, equipo.getNombre(), equipo.getPlaca(), equipo.getFechaCompra(), equipo.getValor())
                     inventario.addLast(registro)
+                    inventario.bubbleSort()
                 inventario.bubbleSort()
                 with open("InventarioGeneral.txt", "w") as archivo_w:
                     aux = inventario.head
@@ -730,17 +836,6 @@ class Administrador:
                         registro = aux.get_data()
                         archivo_w.write(f"{registro.getNombre()} {registro.getId()} {registro.getEquipo()} {registro.getPlaca()} {registro.getFecha().getDia()} {registro.getFecha().getMes()} {registro.getFecha().getA()} {registro.getValor()}\n")
                         aux = aux.get_next()
-            # if self.inventario.size > 1:
-            #     self.inventario.bubbleSort()
-            #     with open("InventarioGeneral.txt", "w") as archivo:
-            #         aux = self.inventario.head
-            #         while aux:
-            #             registro = aux.get_data()
-            #             archivo.write(f"{registro.getNombre()} {registro.getId()} {registro.getEquipo()} {registro.getPlaca()} {registro.getFecha().getDia()} {registro.getFecha().getMes()} {registro.getFecha().getA()} {registro.getValor()}\n")
-            #             aux = aux.get_next()
-                   
-            #self.inventario.bubbleSort()
-            #self.inventario.print_list(end="\n<->\n")
         except FileNotFoundError:
             if self.inventario.size > 1:
                 self.inventario.bubbleSort()
@@ -750,9 +845,9 @@ class Administrador:
                         registro = aux.get_data()
                         archivo.write(f"{registro.getNombre()} {registro.getId()} {registro.getEquipo()} {registro.getPlaca()} {registro.getFecha().getDia()} {registro.getFecha().getMes()} {registro.getFecha().getA()} {registro.getValor()}\n")
                         aux = aux.get_next()
-                    #print("El archivo 'InventarioGeneral.txt' no se encontró. Se ha creado un archivo vacío.") 
-            #self.inventario.bubbleSort()
-        return self.inventario
+                    
+        self.inventario = inventario
+        return inventario
 
 class Investigador:
     def __init__(self, cedula, nombre):
@@ -968,21 +1063,6 @@ class Menu:
         # Cargar datos de empleados y contraseñas
         self.usuarios = self.cargar_usuarios()
         self.passwords = self.cargar_passwords()
-        #self.inventario = self.cargar_inventario()
-
-        # Inicializamos los programas
-        # self.programas = {
-        #     "1": Programa1(),
-        #     "2": Programa2(),
-        #     "3": Programa3(),
-        #     "4": Programa4(),
-        #     "5": Programa5(),
-        #     "6": Programa6(),
-        #     "7": Programa7(),
-        #     "8": Programa8()
-        # }
-
-        # Crear pantalla de login
         self.pantalla_login()
 
     def cargar_usuarios(self):
@@ -1017,27 +1097,6 @@ class Menu:
         except FileNotFoundError:
             messagebox.showerror("Error", "El archivo 'Password.txt' no se encontró.")
         return passwords
-
-
-    # def cargar_inventario(self):
-    #     inventario = DoubleList()
-    #     try:
-    #         with open("InventarioGeneral.txt", "r") as archivo:
-    #             for linea in archivo:
-    #                 datos = linea.strip().split(" ")
-    #                 nombre = datos[0]
-    #                 id_investigador = int(datos[1])
-    #                 fecha_compra = Fecha(int(datos[4]), int(datos[5]), int(datos[6]))
-    #                 equipo = Equipo(datos[2], int(datos[3]), fecha_compra, int(datos[7]))
-    #                 registro = Inventario(nombre, id_investigador, equipo.getNombre(), equipo.getPlaca(), equipo.getFechaCompra(), equipo.getValor())
-    #                 inventario.addLast(registro)
-    #         inventario.bubbleSort()
-    #         inventario.print_list(end="\n<->\n")
-    #     except FileNotFoundError:
-    #         with open("InventarioGeneral.txt", "w") as archivo:
-    #             pass  
-    #         print("El archivo 'InventarioGeneral.txt' no se encontró. Se ha creado un archivo vacío.") 
-    #     return inventario
     
     def pantalla_login(self):
         # Limpiar la ventana
@@ -1092,9 +1151,11 @@ class Menu:
         tk.Button(self.root, text="Eliminar Usuario", command=self.ejecutar_programa_2).pack(pady=10)
         tk.Button(self.root, text="Cambiar Contraseña", command=self.ejecutar_programa_3).pack(pady=10)
         tk.Button(self.root, text="Responder Solicitudes de nuevos equipos", command=self.ejecutar_programa_4).pack(pady=10)
+        tk.Button(self.root, text="Responder Solicitudes de eliminar equipos", command=self.ejecutar_programa_12).pack(pady=10)
         tk.Button(self.root, text="Listar Equipos", command=self.ejecutar_programa_9).pack(pady=10)
         tk.Button(self.root, text="Inventario Investigador", command=self.ejecutar_programa_10).pack(pady=10)
         tk.Button(self.root, text="Inventario General", command=self.ejecutar_programa_11).pack(pady=10)
+        tk.Button(self.root, text="Consultar Control de Cambios", command=self.ejecutar_programa_13).pack(pady=10)
         tk.Button(self.root, text="Cerrar Sesión", command=self.cerrar_sesion).pack(pady=10)
 
     def mostrar_menu_investigador(self):
@@ -1271,15 +1332,8 @@ class Menu:
                     if str(user_id) not in self.usuario.contrasenas.keys():
                         label_status.config(text="Usuario eliminado con éxito", fg="green")
                 except Exception as e:
-                    label_status.config(text="Usuario no encontrado", fg="red")#self.usuario.eliminar_usuario(self.usuarios, self.passwords, int(user_id))
-                #print(f"Contrasenas admind despues de eliminar: {self.usuario.contrasenas}\n")
-                #print("usario elimina",usuario_eliminado)
-                #if str(user_id) not in self.usuario.contrasenas.keys():
-                    #self.usuario.contrasenas = usuario_eliminado
-                    #print("self.passwords",self.passwords)
-                #    label_status.config(text="Usuario eliminado con éxito", fg="green")
-                #else:
-                #    label_status.config(text="Usuario no encontrado", fg="red")
+                    label_status.config(text="Usuario no encontrado", fg="red")
+                    messagebox.showerror("Error", "El usuario no existe.")
             else:
                 label_status.config(text="Por favor, ingrese un ID válido", fg="red")
         
@@ -1367,6 +1421,40 @@ class Menu:
         tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin).pack(pady=10)
         tk.Button(self.root, text="Aceptar", command=aceptar_solicitud, bg="green").pack(side=tk.LEFT, padx=10)
         tk.Button(self.root, text="Rechazar", command=rechazar_solicitud, bg="red").pack(side=tk.LEFT, padx=10)
+        tk.Button(self.root, text="Generar archivo", command=self.usuario.generar_archivo_solicitudes_pendientes, bg="green").pack(side=tk.LEFT, padx=10)
+
+    def ejecutar_programa_12(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        self.root.title("Responder Solicitudes de Eliminar Equipos")
+
+        tk.Label(self.root, text="Solicitudes de Eliminar Equipos", font=("Helvetica", 16)).pack(pady=10)
+
+        solicitudes, datos, line = self.usuario.responder_solicitudes_eliminar()
+
+        text_equipos = tk.Text(self.root, width=100, height=15)
+        text_equipos.pack(pady=10)
+        
+        # Insertar la lista de equipos en el widget Text
+        text_equipos.insert(tk.END, solicitudes)
+        text_equipos.config(state=tk.DISABLED)        
+        
+        def aceptar_solicitud(datos=datos, line=line):
+            self.usuario.registrar_control_de_cambio(datos[0], datos[3], "Elimina Equipo")
+            self.usuario.actualizar_estado_solicitud_eliminar("Solicitudes_eliminar.txt", line, "Aceptada")
+            messagebox.showinfo("Éxito", f"Solicitud para el equipo {datos[2]} aprobada.")
+        
+        def rechazar_solicitud(line=line):
+            self.usuario.registrar_control_de_cambio(datos[0], datos[3], "Elimina Equipo")
+            self.usuario.actualizar_estado_solicitud_eliminar("Solicitudes_eliminar.txt", line, "Rechazada")
+            messagebox.showinfo("Información", "Solicitud rechazada.")
+
+
+        tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin).pack(pady=10)
+        tk.Button(self.root, text="Aceptar", command=aceptar_solicitud, bg="green").pack(side=tk.LEFT, padx=10)
+        tk.Button(self.root, text="Rechazar", command=rechazar_solicitud, bg="red").pack(side=tk.LEFT, padx=10)
+        tk.Button(self.root, text="Generar archivo", command=self.usuario.generar_archivo_solicitudes_pendientes_eliminar, bg="green").pack(side=tk.LEFT, padx=10)
 
 
     #Listar Equipos
@@ -1375,7 +1463,7 @@ class Menu:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        label_equipos = tk.Label(self.root, text="Equipos Listados:", font=("Arial", 14))
+        label_equipos = tk.Label(self.root, text="Listar Equipos:", font=("Arial", 14))
         label_equipos.pack(pady=10)
         
         # Obtener la lista de equipos del investigador
@@ -1402,12 +1490,29 @@ class Menu:
         else:
             messagebox.showerror("Error", f"No se pudo generar el archivo: {archivo_generado}")
 
-    def generar_archivo_solicitudes(self):
-        archivo_generado = self.usuario.generar_archivo_solicitudes() 
-        if archivo_generado.endswith(".txt"):
-            messagebox.showinfo("Éxito", f"El archivo '{archivo_generado}' ha sido generado con éxito.")
-        else:
-            messagebox.showerror("Error", f"No se pudo generar el archivo: {archivo_generado}")
+    def ejecutar_programa_13(self):
+        # Limpiar la ventana actual (el menú)
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        label_equipos = tk.Label(self.root, text="Equipos Listados:", font=("Arial", 14))
+        label_equipos.pack(pady=10)
+        
+        # Obtener la lista de equipos del investigador
+        control_cambios = self.usuario.consultar_control_de_cambio()
+        
+        text_equipos = tk.Text(self.root, width=100, height=15)
+        text_equipos.pack(pady=10)
+        
+        text_equipos.insert(tk.END, control_cambios)
+        text_equipos.config(state=tk.DISABLED) 
+
+        btn_generar_archivo = tk.Button(self.root, text="Generar archivo de Control de Cambios", command=self.usuario.generar_archivo_control_de_cambio)
+        btn_generar_archivo.pack(pady=10)
+
+        btn_regresar = tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin)
+        btn_regresar.pack(pady=10)
+
 
     #
     def ejecutar_programa_6(self):
@@ -1490,7 +1595,7 @@ class Menu:
 
         tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_investigador).pack(pady=10)
         
-        btn_generar_archivo = tk.Button(self.root, text="Generar archivo de solicitudes", command=self.generar_archivo_solicitudes)
+        btn_generar_archivo = tk.Button(self.root, text="Generar archivo de solicitudes", command=self.usuario.generar_archivo_solicitudes)
         btn_generar_archivo.pack(pady=10)
 
     def ejecutar_programa_9(self):
