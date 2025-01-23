@@ -502,8 +502,6 @@ class Administrador:
         self.inventario = DoubleList()
 
     def generar_archivo_solicitudes_pendientes(self):
-            #archivo, _, = self.usuario.generar_archivo_solicitudes_pendientes()
-            #if archivo:
         try:
             with open("Solicitudes_pendientes_agregar.txt", "w") as archivo_pendientes:
                 with open("Solicitudes_agregar.txt", "r") as archivo:
@@ -516,8 +514,6 @@ class Administrador:
             messagebox.showerror("Error", f"No se pudo generar el archivo: Solicitudes_pendientes_agregar.txt")
     
     def generar_archivo_solicitudes_pendientes_eliminar(self):
-            #archivo, _, = self.usuario.generar_archivo_solicitudes_pendientes()
-            #if archivo:
         try:
             with open("Solicitudes_pendientes_eliminar.txt", "w") as archivo_pendientes:
                 with open("Solicitudes_eliminar.txt", "r") as archivo:
@@ -545,14 +541,11 @@ class Administrador:
                 usuario = aux.get_data()
                 f.write(f"{usuario.nombre} {usuario.id} {usuario.fecha_nacimiento.getDia()} {usuario.fecha_nacimiento.getMes()} {usuario.fecha_nacimiento.getA()} {usuario.ciudad_nacimiento} {usuario.tel} {usuario.email} {usuario.dir.getCalle()} {usuario.dir.getNomenclatura()} {usuario.dir.getBarrio()} {usuario.dir.getCiudad()} {usuario.dir.getEdificio()} {usuario.dir.getApto()}\n")
                 aux = aux.get_next()
-        print(f"self.contrasenas: {self.contrasenas}\n")
-        print(f"passwords: {passwords}\n")
         passwords.pop(str(_id))
         with open("Password.txt", "w") as f:
             for key, value in passwords.items():
                 f.write(f"{key} {value['password']} {value['rol']}\n")
                 temp_contra[key] = {"password": value['password'], "rol": value['rol']}
-        print(f"temp_contra: {temp_contra}\n")
         self.contrasenas = temp_contra
     
     def cambiar_password(self, passwords, _id, password):
@@ -573,12 +566,9 @@ class Administrador:
                         solicitud += f"¿Desea agregar el equipo {datos[2]} con placa {datos[3]} al inventario de {datos[0]}?\n"
                         break
             return solicitud,datos,line
-            print("solicitud", solicitud)
         except FileNotFoundError:
             print("El archivo 'Solicitudes_agregar.txt' no se encontró.")
             return None
-
-        #return solicitud,datos,line
  
 
     def responder_solicitudes_eliminar(self):
@@ -592,19 +582,7 @@ class Administrador:
                     break
         print("solicitud", solicitud)
         return solicitud,datos,line
-        #with open("Solicitudes_eliminar.txt", "r") as f:
-            # for line in f:
-            #     datos = line.strip().split(" ")
-            #     if datos[4] == "Pendiente":
-            #         print(f"¿Desea eliminar el equipo {datos[2]} del inventario de {datos[0]} \n Justificacion: {datos[3]} ?")
-            #         respuesta = input("Respuesta (s/n): ")
-            #         if respuesta == "s":
-            #             self.solicitudes_eliminar.addLast({datos[1], datos[2], datos[3]})
-            #             self.registrar_control_de_cambio(datos[0], datos[3], "Eliminar")
-            #             self.actualizar_estado_solicitud_eliminar("Solicitudes_eliminar.txt", line, "Aceptada")
-            #         else:
-            #             print("Solicitud rechazada")
-            #             self.actualizar_estado_solicitud("Solicitudes_eliminar.txt", line, "Rechazada")
+
 
 
     def registrar_control_de_cambio(self, investigador_id, placa, tipo_cambio):
@@ -649,12 +627,9 @@ class Administrador:
                     update_inventario.addLast(registros)
         except FileNotFoundError:
             print("El archivo 'InventarioGeneral.txt' no se encontró.")
-        print(f"Lista actualizar_inventario_eliminar")
-        print(type(placa))
         update_inventario.print_list("\n")
         update_inventario._remove(int(placa))
         update_inventario.bubbleSort()
-        print(f"despues del remove {placa}")
         update_inventario.print_list("\n")
         with open("InventarioGeneral.txt", "w") as archivo:
             aux = update_inventario.head
@@ -665,16 +640,11 @@ class Administrador:
 
     def actualizar_estado_solicitud(self, archivo, linea, estado):
         if estado == "Aceptada":
-            print("linea", linea)
             linea_invetario = linea.strip().split(" ")
             add_invetario = Inventario(linea_invetario[0], linea_invetario[1], linea_invetario[2], int(linea_invetario[3]), Fecha(linea_invetario[4], linea_invetario[5], linea_invetario[6]), linea_invetario[7])
-            print("add_invetario.getPlaca()", add_invetario.getPlaca(),type(add_invetario.getPlaca()))
             self.inventario.addFirst(add_invetario)
             self.actualizar_inventario(add_invetario)
-        #     equipo = Equipo(datos[2], int(datos[3]), Fecha(int(datos[4]), int(datos[5]), int(datos[6])), int(datos[7]))
-        #     self.inventario.addLast(equipo)
-        #     with open("InventarioGeneral.txt", "a") as f:
-        #         f.write(f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} {datos[4]} {datos[5]} {datos[6]} {datos[7]}\n")
+
         with open(archivo, "r") as f:
             lineas = f.readlines()
         with open(archivo, "w") as f:
@@ -750,9 +720,7 @@ class Administrador:
             f.write(f"{cedula} {placa} {tipo} {datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}\n")
 
     def obtener_inventario_investigador(self, identificacion_investigador):
-        """
-        Retorna el inventario de un investigador específico dado su ID.
-        """
+
         equipos_inve = ""
         inventario_investigador = DoubleList()
         try:
@@ -765,7 +733,6 @@ class Administrador:
                         equipo = Equipo(datos[2], int(datos[3]), fecha_compra, int(datos[7]))
                         registro = Inventario(nombre, identificacion_investigador, equipo.getNombre(), equipo.getPlaca(), equipo.getFechaCompra(), equipo.getValor())
                         inventario_investigador.addFirst(registro)
-                        #equipos_inve += f"Equipo: {equipo.nombre} | Placa: {equipo.placa} | Fecha Compra: {equipo.fecha_compra} | Valor: {equipo.valor} \n" 
         except FileNotFoundError:
             print("El archivo 'InventarioGeneral.txt' no se encontró.")
         inventario_investigador.bubbleSort()
@@ -969,6 +936,42 @@ class SolicitudEliminar:
         self.placa = placa
         self.justificacion = justificacion
         self.estado = estado
+       
+    def getTipo(self):
+        return self.tipo
+
+    def setTipo(self, tipo):
+        self.tipo = tipo
+
+    def getNombre(self):
+        return self.nombre
+
+    def setNombre(self, nombre):
+        self.nombre = nombre
+
+    def getIdInvestigador(self):
+        return self.id_investigador
+
+    def setIdInvestigador(self, id_investigador):
+        self.id_investigador = id_investigador
+
+    def getPlaca(self):
+        return self.placa
+
+    def setPlaca(self, placa):
+        self.placa = placa
+
+    def getJustificacion(self):
+        return self.justificacion
+
+    def setJustificacion(self, justificacion):
+        self.justificacion = justificacion
+
+    def getEstado(self):
+        return self.estado
+
+    def setEstado(self, estado):
+        self.estado = estado
 
     def __str__(self):
         return f"{self.tipo} {self.id_investigador} {self.nombre} {self.placa} {self.justificacion} {self.estado}"
@@ -1025,14 +1028,11 @@ class Menu:
     def __init__(self, root):
         self.root = root
         self.root.title("SGI Centro de Investigaciones")
-
-        # Cargar datos de empleados y contraseñas
         self.usuarios = self.cargar_usuarios()
         self.passwords = self.cargar_passwords()
         self.pantalla_login()
 
     def cargar_usuarios(self):
-        """Carga los datos de Empleados.txt"""
         usuarios = DoubleList()
         try:
             with open("Empleados.txt", "r") as archivo:
@@ -1047,7 +1047,6 @@ class Menu:
                     direccion = Direccion(datos[8], datos[9], datos[10], datos[11], datos[12], datos[13])
                     usuario = Usuario(nombre, cedula, fecha_nacimiento, ciudad_nacimiento, tel, email, direccion)  
                     usuarios.addLast(usuario)
-            #usuarios.print_list(end="\n<->\n")
         except FileNotFoundError:
             messagebox.showerror("Error", "El archivo 'Empleados.txt' no se encontró.")
         return usuarios
@@ -1099,9 +1098,6 @@ class Menu:
 
         if rol == "administrador":
             nombre = self.usuarios.search_by_id(int(id_usuario)).getNombre()
-            print("Nombre Administrador", nombre)
-            print("En el menu rolAdmin self.usuarios", self.usuarios)
-            print("En el menu rolAdmin self.password  :", self.passwords)
             self.usuario = Administrador(id_usuario, nombre, self.usuarios, self.passwords)
             self.mostrar_menu_admin()
         elif rol == "investigador":
