@@ -4,36 +4,6 @@ from tkinter import messagebox
 import os
 import datetime
 
-# class Programa1:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 1")
-# class Programa2:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 2")
-# class Programa3:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 3")
-
-# class Programa4:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 4")
-
-# class Programa5:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 5")
-
-# class Programa6:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 6")  
-
-# class Programa7:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 7")
-
-# class Programa8:
-#     def ejecutar(self):
-#         print("Ejecutando Programa 8")
-
 
 class Fecha:
     def __init__(self, dd: int = 0, mm: int = 0, aa: int = 0):
@@ -202,10 +172,7 @@ class DoubleList:
         self.head = DoubleNode()
         self.tail = DoubleNode()
         self.size = 0
-        #node = DoubleNode(data)
-        #self.head = node
-        #self.tail = node
-        #self.size = 1
+
         
     def size(self):
         return self.size
@@ -487,7 +454,6 @@ class SimpleList:
         while current:
             yield current.get_data()  # Devolvemos el dato de cada nodo
             current = current.get_next()
-# Clases para los programas
 
 class Equipo:
     def __init__(self, nombre:str, placa:int, fecha_compra:Fecha, valor:int):
