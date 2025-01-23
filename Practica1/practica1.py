@@ -712,7 +712,7 @@ class Administrador:
                     if datos[1] == str(_id):
                         fecha_compra = Fecha(datos[4], datos[5], datos[6])
                         equipo = Equipo(datos[2], datos[3], fecha_compra, datos[7])
-                        self.equipos.addLast(equipo)
+                        #self.equipos.addLast(equipo)
                         
                         equipos_widget += f"Equipo: {equipo.nombre} | Placa: {equipo.placa} | Fecha Compra: {equipo.fecha_compra} | Valor: {equipo.valor} \n"
                         equipos_txt += f"{equipo.nombre} {equipo.placa} {equipo.fecha_compra} {equipo.valor} \n"
@@ -721,6 +721,32 @@ class Administrador:
             print("Error", "El archivo 'InventarioGeneral.txt' no se encontró.")
         
         return equipos_widget, equipos_txt 
+    
+    def consultar_control_de_cambio(self):
+        control_de_cambio = ""
+        try:
+            with open("Control_de_cambios.txt", "r") as archivo:
+                for linea in archivo:
+                    datos = linea.strip().split(" ")
+                    #print("datos", datos)
+                    control_de_cambio += f"{datos[0]} {datos[1]} {datos[2]} {datos[3]} \n"
+        except FileNotFoundError:
+            print("El archivo 'Control_de_cambio.txt' no se encontró.")
+        return control_de_cambio
+    
+    def generar_archivo_control_de_cambio(self):
+        contol_cambios = self.consultar_control_de_cambio()
+        
+        nombre_archivo = f"Control_de_cambios.txt"
+        
+        try:
+            with open(nombre_archivo, "w") as archivo:
+                archivo.write(contol_cambios)
+                messagebox.showinfo("Éxito", f"El archivo '{nombre_archivo}' ha sido generado con éxito.")
+            return nombre_archivo  
+        except Exception as e:
+            messagebox.showinfo("Fallo", f"El archivo '{nombre_archivo}' no se ha generado con éxito.")
+            return str(e)  
 
     def registrar_control_de_cambio(self, cedula, placa, tipo):
         with open("Control_de_cambios.txt", "a") as f:
@@ -1058,27 +1084,6 @@ class Menu:
         except FileNotFoundError:
             messagebox.showerror("Error", "El archivo 'Password.txt' no se encontró.")
         return passwords
-
-
-    # def cargar_inventario(self):
-    #     inventario = DoubleList()
-    #     try:
-    #         with open("InventarioGeneral.txt", "r") as archivo:
-    #             for linea in archivo:
-    #                 datos = linea.strip().split(" ")
-    #                 nombre = datos[0]
-    #                 id_investigador = int(datos[1])
-    #                 fecha_compra = Fecha(int(datos[4]), int(datos[5]), int(datos[6]))
-    #                 equipo = Equipo(datos[2], int(datos[3]), fecha_compra, int(datos[7]))
-    #                 registro = Inventario(nombre, id_investigador, equipo.getNombre(), equipo.getPlaca(), equipo.getFechaCompra(), equipo.getValor())
-    #                 inventario.addLast(registro)
-    #         inventario.bubbleSort()
-    #         inventario.print_list(end="\n<->\n")
-    #     except FileNotFoundError:
-    #         with open("InventarioGeneral.txt", "w") as archivo:
-    #             pass  
-    #         print("El archivo 'InventarioGeneral.txt' no se encontró. Se ha creado un archivo vacío.") 
-    #     return inventario
     
     def pantalla_login(self):
         # Limpiar la ventana
@@ -1137,6 +1142,7 @@ class Menu:
         tk.Button(self.root, text="Listar Equipos", command=self.ejecutar_programa_9).pack(pady=10)
         tk.Button(self.root, text="Inventario Investigador", command=self.ejecutar_programa_10).pack(pady=10)
         tk.Button(self.root, text="Inventario General", command=self.ejecutar_programa_11).pack(pady=10)
+        tk.Button(self.root, text="Consultar Control de Cambios", command=self.ejecutar_programa_13).pack(pady=10)
         tk.Button(self.root, text="Cerrar Sesión", command=self.cerrar_sesion).pack(pady=10)
 
     def mostrar_menu_investigador(self):
@@ -1442,7 +1448,7 @@ class Menu:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        label_equipos = tk.Label(self.root, text="Equipos Listados:", font=("Arial", 14))
+        label_equipos = tk.Label(self.root, text="Consultar Control de Cambios:", font=("Arial", 14))
         label_equipos.pack(pady=10)
         
         # Obtener la lista de equipos del investigador
@@ -1469,12 +1475,29 @@ class Menu:
         else:
             messagebox.showerror("Error", f"No se pudo generar el archivo: {archivo_generado}")
 
-    def generar_archivo_solicitudes(self):
-        archivo_generado = self.usuario.generar_archivo_solicitudes() 
-        if archivo_generado.endswith(".txt"):
-            messagebox.showinfo("Éxito", f"El archivo '{archivo_generado}' ha sido generado con éxito.")
-        else:
-            messagebox.showerror("Error", f"No se pudo generar el archivo: {archivo_generado}")
+    def ejecutar_programa_13(self):
+        # Limpiar la ventana actual (el menú)
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        label_equipos = tk.Label(self.root, text="Equipos Listados:", font=("Arial", 14))
+        label_equipos.pack(pady=10)
+        
+        # Obtener la lista de equipos del investigador
+        control_cambios = self.usuario.consultar_control_de_cambio()
+        
+        text_equipos = tk.Text(self.root, width=100, height=15)
+        text_equipos.pack(pady=10)
+        
+        text_equipos.insert(tk.END, control_cambios)
+        text_equipos.config(state=tk.DISABLED) 
+
+        btn_generar_archivo = tk.Button(self.root, text="Generar archivo de Control de Cambios", command=self.usuario.generar_archivo_control_de_cambio)
+        btn_generar_archivo.pack(pady=10)
+
+        btn_regresar = tk.Button(self.root, text="Regresar al Menú", command=self.regresar_menu_admin)
+        btn_regresar.pack(pady=10)
+
 
     #
     def ejecutar_programa_6(self):
